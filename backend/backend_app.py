@@ -1,5 +1,8 @@
-from flask import Flask, jsonify, request
+import os
+
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
+from flask_swagger_ui import get_swaggerui_blueprint
 
 app = Flask(__name__)
 CORS(app)  # This will enable CORS for all routes
@@ -12,19 +15,17 @@ POSTS = [
 
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
-    sort_field = request.args.get('sort')
-    sort_direction = request.args.get('direction', 'asc').lower()
+    sort_by = request.args.get('sort')
+    direction = request.args.get('direction')
 
-    if sort_field not in [None, 'title', 'content']:
-        return jsonify({"message": "Invalid sort field. Use 'title' or 'content'."}), 400
+    if sort_by == "title":
+        posts_sorted = sorted(POSTS, key=lambda x: x['title'], reverse=(direction == "desc"))
+    elif sort_by == "content":
+        posts_sorted = sorted(POSTS, key=lambda x: x['content'], reverse=(direction == "desc"))
+    else:
+        posts_sorted = POSTS
 
-    if sort_direction not in ['asc', 'desc']:
-        return jsonify({"message": "Invalid sort direction. Use 'asc' or 'desc'."}), 400
-
-    if sort_field:
-        POSTS.sort(key=lambda x: x[sort_field].lower(), reverse=(sort_direction == 'desc'))
-
-    return jsonify(POSTS)
+    return jsonify(posts_sorted)
 
 
 @app.route('/api/posts', methods=['POST'])
