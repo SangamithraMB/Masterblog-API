@@ -1,0 +1,173 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Masterblog API",
+    "version": "1.0.0",
+    "description": "API for managing blog posts including CRUD operations."
+  },
+  "host": "localhost:5002",
+  "basePath": "/api",
+  "tags": [
+    {
+      "name": "Post",
+      "description": "Post API - CRUD"
+    }
+  ],
+  "paths": {
+    "/posts": {
+      "get": {
+        "summary": "Retrieve all blog posts",
+        "tags": ["Post"],
+        "responses": {
+          "200": {
+            "description": "A list of blog posts",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Post"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new blog post",
+        "tags": ["Post"],
+        "parameters": [
+          {
+            "name": "post",
+            "in": "body",
+            "description": "New post details",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/NewPost"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Post created successfully",
+            "schema": {
+              "$ref": "#/definitions/Post"
+            }
+          },
+          "400": {
+            "description": "Invalid input, title and content are required"
+          }
+        }
+      }
+    },
+    "/posts/{post_id}": {
+      "parameters": [
+        {
+          "name": "post_id",
+          "in": "path",
+          "required": true,
+          "description": "ID of the post to manipulate",
+          "type": "integer"
+        }
+      ],
+      "put": {
+        "summary": "Update an existing blog post",
+        "tags": ["Post"],
+        "parameters": [
+          {
+            "name": "post",
+            "in": "body",
+            "description": "Updated post details",
+            "schema": {
+              "$ref": "#/definitions/NewPost"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Post updated successfully",
+            "schema": {
+              "$ref": "#/definitions/Post"
+            }
+          },
+          "404": {
+            "description": "Post not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a blog post",
+        "tags": ["Post"],
+        "responses": {
+          "200": {
+            "description": "Post deleted successfully"
+          },
+          "404": {
+            "description": "Post not found"
+          }
+        }
+      }
+    },
+    "/posts/search": {
+      "get": {
+        "summary": "Search for posts by title or content",
+        "tags": ["Post"],
+        "parameters": [
+          {
+            "name": "title",
+            "in": "query",
+            "type": "string",
+            "description": "Search by title"
+          },
+          {
+            "name": "content",
+            "in": "query",
+            "type": "string",
+            "description": "Search by content"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results matching query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Post"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Post": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "example": 1
+        },
+        "title": {
+          "type": "string",
+          "example": "First Post"
+        },
+        "content": {
+          "type": "string",
+          "example": "This is the first post content"
+        }
+      }
+    },
+    "NewPost": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "example": "Post Title"
+        },
+        "content": {
+          "type": "string",
+          "example": "Post content goes here"
+        }
+      },
+      "required": ["title", "content"]
+    }
+  }
+}
