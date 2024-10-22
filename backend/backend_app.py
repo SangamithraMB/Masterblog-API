@@ -12,14 +12,14 @@ POSTS = [
      "date": "2023-06-08"},
 ]
 
-SWAGGER_URL = "/api/docs"  # (1) swagger endpoint e.g. HTTP://localhost:5002/api/docs
-API_URL = "/static/masterblog.json"  # (2) ensure you create this dir and file
+SWAGGER_URL = "/api/docs"  # swagger endpoint e.g. HTTP://localhost:5002/api/docs
+API_URL = "/static/masterblog.json"
 
 swagger_ui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
     API_URL,
     config={
-        'app_name': 'Masterblog API'  # (3) You can change this if you like
+        'app_name': 'Masterblog-API'
     }
 )
 app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
@@ -171,20 +171,41 @@ def search_posts():
     Returns:
     A JSON array of posts matching the search criteria.
     """
-    title_query = request.args.get('title', '').lower()
-    content_query = request.args.get('content', '').lower()
-    author_query = request.args.get('author', '').lower()
-    date_query = request.args.get('date', '').lower()
+    title_query = request.args.get('title')
+    content_query = request.args.get('content')
+    author_query = request.args.get('author')
+    date_query = request.args.get('date')
+    results = POSTS
 
-    results = [
-        post for post in POSTS
-        if (title_query in post['title'].lower() or
-            content_query in post['content'].lower() or
-            author_query in post['author'].lower() or
-            date_query in post['date'])
-    ]
+    if title_query is not None:
+        results = [
+            post for post in results
+            if (title_query.lower() in post['title'].lower()
+                )
+        ]
 
-    return jsonify(results)
+    if content_query is not None:
+        results = [
+            post for post in results
+            if (content_query.lower() in post['content'].lower()
+                )
+        ]
+
+    if author_query is not None:
+        results = [
+            post for post in results
+            if (author_query.lower() in post['author'].lower()
+                )
+        ]
+
+    if date_query is not None:
+        results = [
+            post for post in results
+            if (date_query.lower() in post['date'].lower()
+                )
+        ]
+
+    return jsonify(results), 200
 
 
 if __name__ == '__main__':
