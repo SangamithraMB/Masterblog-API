@@ -1,4 +1,6 @@
-from flask import Flask, jsonify, request
+import os
+
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
 from datetime import datetime
@@ -6,14 +8,28 @@ from datetime import datetime
 app = Flask(__name__)
 CORS(app)
 
-POSTS = [
-    {"id": 1, "title": "First post", "content": "This is the first post.", "author": "John Doe", "date": "2023-06-07"},
-    {"id": 2, "title": "Second post", "content": "This is the second post.", "author": "Jane Doe",
-     "date": "2023-06-08"},
-]
+
+def default_posts():
+    return [
+        {"id": 1, "title": "First post", "content": "This is the first post.", "author": "John Doe",
+         "date": "2023-06-07"},
+        {"id": 2, "title": "Second post", "content": "This is the second post.", "author": "Jane Doe",
+         "date": "2023-06-08"},
+    ]
+
+
+# Initialize posts
+posts = default_posts()
 
 SWAGGER_URL = "/api/docs"  # swagger endpoint e.g. HTTP://localhost:5002/api/docs
 API_URL = "/static/masterblog.json"
+
+
+# Serve the masterblog.json file from the static folder
+@app.route('/static/masterblog.json')
+def serve_masterblog_json():
+    return send_from_directory(os.path.join(app.root_path, 'static'), 'masterblog.json')
+
 
 swagger_ui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
@@ -41,16 +57,16 @@ def get_posts():
     direction = request.args.get('direction', 'asc')
 
     if sort_by == "title":
-        posts_sorted = sorted(POSTS, key=lambda x: x['title'], reverse=(direction == "desc"))
+        posts_sorted = sorted(posts, key=lambda x: x['title'], reverse=(direction == "desc"))
     elif sort_by == "content":
-        posts_sorted = sorted(POSTS, key=lambda x: x['content'], reverse=(direction == "desc"))
+        posts_sorted = sorted(posts, key=lambda x: x['content'], reverse=(direction == "desc"))
     elif sort_by == "author":
-        posts_sorted = sorted(POSTS, key=lambda x: x['author'], reverse=(direction == "desc"))
+        posts_sorted = sorted(posts, key=lambda x: x['author'], reverse=(direction == "desc"))
     elif sort_by == "date":
-        posts_sorted = sorted(POSTS, key=lambda x: datetime.strptime(x['date'], "%Y-%m-%d"),
+        posts_sorted = sorted(posts, key=lambda x: datetime.strptime(x['date'], "%Y-%m-%d"),
                               reverse=(direction == "desc"))
     else:
-        posts_sorted = POSTS
+        posts_sorted = posts
 
     return jsonify(posts_sorted)
 
@@ -80,7 +96,7 @@ def add_post():
     except ValueError:
         return jsonify({"error": "Date must be in the format YYYY-MM-DD"}), 400
 
-    new_id = max(post['id'] for post in POSTS) + 1 if POSTS else 1
+    new_id = max(post['id'] for post in posts) + 1 if posts else 1
 
     new_post = {
         "id": new_id,
@@ -90,7 +106,7 @@ def add_post():
         "date": data['date']
     }
 
-    POSTS.append(new_post)
+    posts.append(new_post)
 
     return jsonify(new_post), 201
 
@@ -106,11 +122,10 @@ def delete_post(post_id):
     Returns:
     A message confirming the deletion if successful, or a 404 error if the post was not found.
     """
-    global POSTS
-    post_to_delete = next((post for post in POSTS if post['id'] == post_id), None)
+    post_to_delete = next((post for post in posts if post['id'] == post_id), None)
 
     if post_to_delete:
-        POSTS.remove(post_to_delete)
+        posts.remove(post_to_delete)
         return jsonify({"message": f"Post with id {post_id} has been deleted successfully."}), 200
     else:
         return jsonify({"message": f"Post with id {post_id} not found."}), 404
@@ -134,8 +149,7 @@ def update_post(post_id):
     The updated post as JSON with a status code 200.
     If the post is not found, returns a 404 error.
     """
-    global POSTS
-    post_to_update = next((post for post in POSTS if post['id'] == post_id), None)
+    post_to_update = next((post for post in posts if post['id'] == post_id), None)
 
     if post_to_update is None:
         return jsonify({"message": f"Post with id {post_id} not found."}), 404
@@ -175,30 +189,31 @@ def search_posts():
     content_query = request.args.get('content')
     author_query = request.args.get('author')
     date_query = request.args.get('date')
-    results = POSTS
 
-    if title_query is not None:
+    results = posts
+
+    if title_query:
         results = [
             post for post in results
             if (title_query.lower() in post['title'].lower()
                 )
         ]
 
-    if content_query is not None:
+    if content_query:
         results = [
             post for post in results
             if (content_query.lower() in post['content'].lower()
                 )
         ]
 
-    if author_query is not None:
+    if author_query:
         results = [
             post for post in results
             if (author_query.lower() in post['author'].lower()
                 )
         ]
 
-    if date_query is not None:
+    if date_query:
         results = [
             post for post in results
             if (date_query.lower() in post['date'].lower()
