@@ -66,6 +66,12 @@ function addPost() {
     .then(post => {
         console.log('Post added:', post);
         loadPosts(); // Reload the posts after adding a new one
+
+        // Clear the input fields after the post is added
+        document.getElementById('post-title').value = '';
+        document.getElementById('post-content').value = '';
+        document.getElementById('post-author').value = '';
+        document.getElementById('post-date').value = '';
     })
     .catch(error => console.error('Error:', error));
 }
