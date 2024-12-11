@@ -152,6 +152,15 @@
         "content": {
           "type": "string",
           "example": "This is the first post content"
+        },
+        "author": {
+          "type": "string",
+          "example": "John Doe"
+        },
+        "date": {
+          "type": "string",
+          "format": "date",
+          "example": "2023-06-07"
         }
       }
     },
@@ -165,9 +174,18 @@
         "content": {
           "type": "string",
           "example": "Post content goes here"
+        },
+        "author": {
+          "type": "string",
+          "example": "John Doe"
+        },
+        "date": {
+          "type": "string",
+          "format": "date",
+          "example": "2023-06-07"
         }
       },
-      "required": ["title", "content"]
+      "required": ["title", "content", "author", "date"]
     }
   }
 }
