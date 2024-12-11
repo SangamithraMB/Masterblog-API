@@ -87,6 +87,7 @@ function deletePost(postId) {
     .then(response => {
         console.log('Post deleted:', postId);
         loadPosts(); // Reload the posts after deleting one
+        console.log('Post deleted:', postId);
     })
     .catch(error => console.error('Error:', error));  // If an error occurs, log it to the console
 }

@@ -4,7 +4,7 @@
 }
 
 body {
-    background-color: #f5f5f5;
+    background-color: #f4f4f9;
     margin: 0;
     padding: 20px 0;
     height: 100vh;
@@ -34,7 +34,14 @@ body {
     border-radius: 8px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.5s ease;
+    background-color: #aacf76;
+    color: blue;
 }
+
+.input-field button:hover {
+    background-color: #aacf76;
+}
+
 
 .input-field input {
     flex-grow: 1;
@@ -42,12 +49,12 @@ body {
 }
 
 .input-field input::placeholder {
-    color: #aaa;
+    color: blue;
 }
 
 .input-field button {
-    background-color: #4466ee;
-    color: #fff;
+    background-color: #253480;
+    color: white;
     cursor: pointer;
 }
 
@@ -57,7 +64,7 @@ body {
 
 .post {
     border-radius: 8px;
-    background-color: #f5f5f5;
+    background-color: #e3edd5;
     margin-bottom: 20px;
     padding: 20px;
     position: relative;
@@ -65,20 +72,20 @@ body {
 
 .post h2 {
     margin: 0;
-    color: #4466ee;
+    color: #324020;
     font-weight: 700;
 }
 
 .post p {
     margin: 10px 0 0;
-    color: #333;
+    color: #2f4f02;
 }
 
 .post button {
     position: absolute;
     top: 10px;
     right: 10px;
-    background-color: #ff4444;
+    background-color: #30648c;
     color: #fff;
     border: none;
     padding: 5px 10px;
